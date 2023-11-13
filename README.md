@@ -19,9 +19,15 @@ Certifique-se de ter o Docker e o Docker Compose instalados em sua máquina `doc
     bash
     git clone https://github.com/WendelLorenzi/projeto-SD
     cd projeto-SD
+
+2. *Certifique-se de estar com todas as dependências:*
+
+    bash
+    npm install
+    npm update
     
 
-2. *Construa e inicie os containers Docker:*
+3. *Construa e inicie os containers Docker:*
 
     bash
     docker-compose up -d
@@ -29,13 +35,13 @@ Certifique-se de ter o Docker e o Docker Compose instalados em sua máquina `doc
 
     Isso iniciará os containers em segundo plano.
 
-3. *Acesse o chat:*
+4. *Acesse o chat:*
 
     Abra o navegador e acesse a URL especificada no projeto, por exemplo, `http://localhost:3000`.
 
     *Nota:* Se você estiver executando o Docker em uma máquina remota, você pode acessar a aplicação usando o endereço IP dessa máquina. Certifique-se de que as portas necessárias estejam abertas e redirecionadas, se necessário.
 
-4. *Pronto!* 
+5. *Pronto!* 
 
     Agora você tem o chat em tempo real em execução localmente. Se estiver executando em uma máquina remota, outros usuários podem acessar a aplicação usando o endereço IP dessa máquina.
 
