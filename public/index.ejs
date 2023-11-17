@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Chat SD</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <form id="chat">
+        <input class="input-Name" id="inputName" type="text" name="username" placeholder="Digite seu usuário">
+        <div class="messages"></div>
+        <input type="text" name="message" placeholder="Digite sua mensagem">
+        <button type="submit">Enviar</button>
+        <!-- <div class="user"></div> -->
+    </form>
+
+    <script type="text/javascript">
+        const host = '<%= host %>';
+        const port = '<%= port %>';
+        var socket = io(`${host}:${port}`);
+        let count = 0;
+
+        function renderMessages(message) {
+            $('.messages').append('<div class="message"><strong>' + message.author + '</strong> ' + message.message + '</div>');
+        }
+
+        // function renderUser(user) {
+        //     $('.user').append('<div class="user"> <strong>Nome: </strong> ' + user.author + ' <strong>IP: </strong> ' + user.ip + '</div>');
+        // }
+
+        var messages = [];
+        // var user = [];
+
+        socket.on('previousMessages', function (messages) {
+            for (message of messages) {
+                renderMessages(message);
+            }
+        });
+
+        // socket.on('userProfile', function (userP) {
+        //     user = userP;
+        //     console.log(userP);
+        //     if(user.length) {
+        //         renderUser(user);
+        //     }
+        // });
+
+        socket.on('stateChanged', newState => {
+            messages = newState;
+            for (message of messages) {
+                renderMessages(message);
+            }
+        });
+
+        $('#chat').submit(function (event) {
+            event.preventDefault();
+            if(count === 0) {
+                var inputName = document.getElementById('inputName');
+                var author = localStorage.getItem('author');
+                if(author) {
+                    inputName.classList.add('escondido');
+                } else {
+                    inputName.classList.remove('escondido');
+                }
+                
+                
+
+                var inputName = $('#inputName');
+                var author = inputName.val();
+                var message = $('input[name=message]').val();
+
+                if (author.length && message.length) {
+                    var messageObj = {
+                        author: author,
+                        message: message,
+                    };
+
+                    localStorage.setItem('author', author);
+
+                    renderMessages(messageObj);
+
+                    socket.emit('sendMessage', messageObj);
+
+                    $('input[name=username], input[name=message]').val('');
+                }
+            }
+
+            var inputName = document.getElementById('inputName');
+            var author = localStorage.getItem('author');
+            if(author != undefined || null) {
+                inputName.classList.add('escondido');
+            }
+            
+            
+            var message = $('input[name=message]').val();
+
+            if (message.length) {
+                var messageObj = {
+                    message: message,
+                };
+                
+                renderMessages({author, message});
+
+                socket.emit('sendMessage', messageObj);
+
+                $('input[name=message]').val('');
+            }
+            count++;
+        });
+    </script>
+</body>
+</html>
