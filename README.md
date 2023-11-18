@@ -2,9 +2,11 @@
 
 Este é um projeto de chat em tempo real que utiliza sockets para comunicação, e containers Docker para facilitar a implantação e execução em diferentes ambientes. O projeto foi desenvolvido em Node.js.
 
-![chat-sd](https://github.com/WendelLorenzi/projeto-SD/assets/38894557/ca37d6cd-5575-4ae0-9a5c-4635a59122fc)
+![chat-tst](https://github.com/WendelLorenzi/projeto-SD/assets/38894557/0fa17c38-2479-4c40-a342-559b90e5a098)
+
 
 ## Instalação
+
 
 Siga os passos abaixo para configurar e executar o projeto em sua máquina local.
 
