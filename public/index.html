@@ -21,7 +21,19 @@
         var socket = io('http://localhost:3000');
 
         function renderMessages(message) {
-            $('.messages').append('<div class="message"><strong>' + message.author + '</strong> ' + message.message + '</div>');
+            $('.messages').append(`<div class="message">
+                    <div  class="userMessage">
+                        <div>
+                            <strong>${message.author}</strong> 
+                            </br>
+                            ${message.message} 
+                            </br>
+                            <div style="text-align: right;">
+                                <span class="dateTime">${message.dateTime}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`);
         }
 
         socket.on('previousMessages', function (messages) {
@@ -40,17 +52,25 @@
             var author = $('input[name=username]').val();
             var message = $('input[name=message]').val();
 
+            const date = new Date();
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+
             if (author.length && message.length) {
                 var messageObj = {
                     author: author,
                     message: message,
+                    dateTime: 
+                    `${('0' + day).slice(-2)}/${('0' + month).slice(-2)}/${year} às ${('0' + hours).slice(-2)}:${('0' + minutes).slice(-2)}`
                 };
 
                 renderMessages(messageObj);
 
                 socket.emit('sendMessage', messageObj);
 
-                $('input[name=username]').val('');
                 $('input[name=message]').val('');
             }
         })

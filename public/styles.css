@@ -6,6 +6,8 @@ html, body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1vw;
   }
   
   #chat {
@@ -22,7 +24,6 @@ html, body {
     border: 1px solid #ddd;
     height: 5vw;
     padding: 0 2vw;
-    font-size: 1.5vw;
   }
   
   button {
@@ -39,11 +40,27 @@ html, body {
   }
   
   .messages {
+    overflow-y: auto;
+    max-height: 40vw;
     width: 60vw;
     height: 40vw;
     margin: 2vw 0;
     border: 1px solid #ddd;
-    padding: 2vw;
+  }
+
+  .userMessage{
+    display: flex;
+    width: max-content;
+    background-color: aliceblue;
+    border: 1px solid black;
+    border-radius: 12px;
+    padding: 1vw;
+    margin: 1vw;
+  }
+
+  .dateTime{
+    font-size: 0.8vw;
+    color: grey;
   }
 
   @media screen and (max-width: 990px) {
