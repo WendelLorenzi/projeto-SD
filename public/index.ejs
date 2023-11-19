@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Chat SD</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -21,7 +21,8 @@
     <script type="text/javascript">
         const host = '<%= host %>';
         const port = '<%= port %>';
-        var socket = io(`${host}:${port}`);
+        console.log(`http://${host}:${port}`);
+        var socket = io.connect(`http://${host}:${port}`);
         let count = 0;
 
         function renderMessages(message) {
@@ -36,8 +37,11 @@
         // var user = [];
 
         socket.on('previousMessages', function (messages) {
-            for (message of messages) {
-                renderMessages(message);
+            if(messages.length > 0) {
+                console.log('recebi previousMessages', messages);
+                for (message of messages) {
+                    renderMessages(message);
+                }
             }
         });
 
@@ -50,8 +54,11 @@
         // });
 
         socket.on('stateChanged', newState => {
+            console.log('recebi stateChanged', newState);
             messages = newState;
+            console.log('messages: ', messages);
             for (message of messages) {
+                console.log('message: ', message);
                 renderMessages(message);
             }
         });
@@ -82,6 +89,8 @@
                     localStorage.setItem('author', author);
 
                     renderMessages(messageObj);
+
+                    console.log('messageObj: ', messageObj);
 
                     socket.emit('sendMessage', messageObj);
 

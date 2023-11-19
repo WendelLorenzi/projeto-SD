@@ -1,10 +1,17 @@
-version: "2"
+version: '3'
 
 services:
-  chat:
-    build: .
-    command: npm start
-    ports:
-      - 3000:3000
-    volumes:
-      - .:/usr/app
+ chat:
+   build:
+     context: .
+     args:
+       NODE_ENVIRONMENT: prod
+       PORT: 3000
+       HOST: 192.168.18.17
+   environment:
+     NODE_ENVIRONMENT: prod
+   command: npm start
+   ports:
+     - 3000:3000
+   volumes:
+     - .:/usr/app

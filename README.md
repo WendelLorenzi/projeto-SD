@@ -37,7 +37,7 @@ Certifique-se de ter o Docker e o Docker Compose instalados em sua máquina `doc
 
 4. *Acesse o chat:*
 
-    Abra o navegador e acesse a URL especificada no projeto, por exemplo, `http://localhost:3000`.
+    Abra o navegador e acesse a URL especificada no projeto, por exemplo, `http://localhost:8080`.
 
     *Nota:* Se você estiver executando o Docker em uma máquina remota, você pode acessar a aplicação usando o endereço IP dessa máquina. Certifique-se de que as portas necessárias estejam abertas e redirecionadas, se necessário.
 

@@ -2,17 +2,20 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const app = express();
+const os = require('os');
+const cors = require('cors');
 
 const server = require('http').createServer(app);
-const PORT = 8080;
 
 const io = require('socket.io')(server, {
     cors: {
         origin: '*',
-        methods: ['GET', 'POST']
+        methods: ["GET", "POST"]
     },
     allowEIO3: true
 });
+
+// app.use(cors());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -22,8 +25,28 @@ app.engine('html', require('ejs').renderFile);
 
 app.set('view engine', 'html');
 
+const networkInfo = os.networkInterfaces();
+
+const getAddress = () => {
+    if(`${process.env.NODE_ENVIRONMENT}` === 'prod') {
+        let interface = networkInfo['eth0'];
+        if(interface) {
+            console.log('Endereço da eth0:', interface[0].address);
+            return interface[0].address;
+        }
+    } else {
+        let interface = networkInfo['Wi-Fi'];
+        if(interface) {
+            console.log('Endereço dao wifi:', interface[3].address);
+            return interface[3].address;
+        }
+    }
+}
+
+const endereco = getAddress();
+
 app.get('/', (req, res) => {
-    res.render('index.ejs', { host: process.env.NODE_HOST, port: PORT});
+    res.render('index.ejs', { host: `${endereco}`, port: process.env.PORT });
 });
 
 
@@ -31,8 +54,8 @@ app.get('/', (req, res) => {
 let messages = [];
 let userIP = [];
 
-
 io.on('connection', socket => {
+    console.log('entrou socket');
     const clientIp = socket.handshake.headers['x-real-ip'] || socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
     console.log('Endereço IP do cliente conectado: ' + clientIp);
     const getClient = (clientIp) => {
@@ -75,24 +98,25 @@ io.on('connection', socket => {
     let client = getClient(clientIp);
 
     socket.on('sendMessage', async data => {
+        console.log('data sendMessage server', data);
         if (client === undefined) {
             client = pushUser(data);
             const result = await setMessage(client, data);
             if (result !== null) {
                 messages.push(result);
-                // emite as mudanças na variavel messages
-                socket.broadcast.emit('stateChanged', messages);
             }
         } else {
             const result = await setMessage(client, data);
             if (result !== null) {
                 messages.push(result);
-                socket.broadcast.emit('stateChanged', messages);
             }
         }
+        socket.broadcast.emit('stateChanged', messages);
+        console.log('messages', messages);
     });
 
     socket.emit('previousMessages', messages);
 
 });
-server.listen(PORT, `${process.env.NODE_HOST}`);
+
+server.listen(process.env.PORT, process.env.HOST);
