@@ -11,14 +11,17 @@
 </head>
 <body>
     <form id="chat">
-        <input type="text" name="username" placeholder="Digite seu usuário">
+        <input class="input-Name" id="inputName" type="text" name="username" placeholder="Digite seu usuário">
         <div class="messages"></div>
-        <input type="text" name="message" placeholder="Digite sua mensagem">
+        <input class="input-msg" type="text" name="message" placeholder="Digite sua mensagem">
         <button type="submit">Enviar</button>
     </form>
 
     <script type="text/javascript">
-        var socket = io('http://localhost:3000');
+        const host = '<%= host %>';
+        const port = '<%= port %>';
+        var socket = io.connect(`http://${host}:${port}`);
+        let count = 0;
 
         function renderMessages(message) {
             $('.messages').append(`<div class="message">
@@ -42,16 +45,53 @@
             }
         })
 
-        socket.on('receivedMessage', function (message) {
-            renderMessages(message);
+        socket.on('receivedMessage', function (messages) {
+            renderMessages(messages[messages.length - 1]);
         })
 
         $('#chat').submit(function (event) {
             event.preventDefault();
 
-            var author = $('input[name=username]').val();
-            var message = $('input[name=message]').val();
+            if(count === 0) {
+                var inputName = $('#inputName');
+                var author = inputName.val();
+                var message = $('input[name=message]').val();
+                const date = new Date();
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = date.getFullYear();
+                const hours = date.getHours();
+                const minutes = date.getMinutes();
 
+                if (author.length && message.length) {
+                    var messageObj = {
+                        author: author,
+                        message: message,
+                        dateTime: 
+                        `${('0' + day).slice(-2)}/${('0' + month).slice(-2)}/${year} às ${('0' + hours).slice(-2)}:${('0' + minutes).slice(-2)}`
+                    };
+
+                    localStorage.setItem('author', author);
+
+                    renderMessages(messageObj);
+
+                    socket.emit('sendMessage', messageObj);
+
+                    $('input[name=message]').val('');
+                
+                }
+                count ++;
+            }
+
+            var inputName = document.getElementById('inputName');
+            var author = localStorage.getItem('author');
+            if(author) {
+                inputName.classList.add('escondido');
+            } else {
+                inputName.classList.remove('escondido');
+            }
+
+            var message = $('input[name=message]').val();
             const date = new Date();
             const day = date.getDate();
             const month = date.getMonth() + 1;
@@ -72,7 +112,10 @@
                 socket.emit('sendMessage', messageObj);
 
                 $('input[name=message]').val('');
+            
             }
+
+            count ++;
         })
     </script>
 </body>
