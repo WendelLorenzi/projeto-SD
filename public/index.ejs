@@ -13,14 +13,13 @@
     <form id="chat">
         <input class="input-Name" id="inputName" type="text" name="username" placeholder="Digite seu usuário">
         <div class="messages"></div>
-        <input type="text" name="message" placeholder="Digite sua mensagem">
+        <input class="input-msg" type="text" name="message" placeholder="Digite sua mensagem">
         <button type="submit">Enviar</button>
     </form>
 
     <script type="text/javascript">
-                const host = '<%= host %>';
+        const host = '<%= host %>';
         const port = '<%= port %>';
-        console.log(`http://${host}:${port}`);
         var socket = io.connect(`http://${host}:${port}`);
         let count = 0;
 
@@ -46,8 +45,8 @@
             }
         })
 
-        socket.on('receivedMessage', function (message) {
-            renderMessages(message);
+        socket.on('receivedMessage', function (messages) {
+            renderMessages(messages[messages.length - 1]);
         })
 
         $('#chat').submit(function (event) {
@@ -121,63 +120,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-event.preventDefault();
-            if(count === 0) {
-                var inputName = document.getElementById('inputName');
-                var author = localStorage.getItem('author');
-                if(author) {
-                    inputName.classList.add('escondido');
-                } else {
-                    inputName.classList.remove('escondido');
-                }
-                
-                
-
-                var inputName = $('#inputName');
-                var author = inputName.val();
-                var message = $('input[name=message]').val();
-
-                if (author.length && message.length) {
-                    var messageObj = {
-                        author: author,
-                        message: message,
-                    };
-
-                    localStorage.setItem('author', author);
-
-                    renderMessages(messageObj);
-
-                    console.log('messageObj: ', messageObj);
-
-                    socket.emit('sendMessage', messageObj);
-
-                    $('input[name=username], input[name=message]').val('');
-                }
-            }
-
-            var inputName = document.getElementById('inputName');
-            var author = localStorage.getItem('author');
-            if(author != undefined || null) {
-                inputName.classList.add('escondido');
-            }
-            
-            
-            var message = $('input[name=message]').val();
-
-            if (message.length) {
-                var messageObj = {
-                    message: message,
-                };
-                
-                renderMessages({author, message});
-
-                socket.emit('sendMessage', messageObj);
-
-                $('input[name=message]').val('');
-            }
-            count++;
-        });

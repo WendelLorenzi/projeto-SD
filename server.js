@@ -11,7 +11,7 @@ const networkInfo = os.networkInterfaces();
 
 const getAddress = () => {
     if(`${process.env.NODE_ENVIRONMENT}` === 'prod') {
-        let interface = networkInfo['eth0'];
+        let interface = networkInfo['lo'];
         if(interface) {
             console.log('Endereço da eth0:', interface[0].address);
             return interface[0].address;
@@ -56,7 +56,6 @@ let messages = [];
 let userIP = [];
 
 io.on('connection', socket => {
-    console.log('entrou socket');
     const clientIp = socket.handshake.headers['x-real-ip'] || socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
     console.log('Endereço IP do cliente conectado: ' + clientIp);
     const getClient = (clientIp) => {
@@ -66,7 +65,11 @@ io.on('connection', socket => {
     const pushUser = (data) => {
         if (data.author != undefined) {
             const objIp = { ip: clientIp, author: data.author };
-            // messages.push({author: data.author, message: data.message})
+            const userNick = messages.find(message => message.author === data.author);
+            if(userNick != undefined) {
+                console.log('nome ja exite');
+                return null;
+            }
             if (objIp.ip && objIp.author) {
                 userIP.push(objIp);
                 // socket.emit('userProfile', objIp);
@@ -98,12 +101,13 @@ io.on('connection', socket => {
 
     socket.on('sendMessage', async data => {
         let client = getClient(clientIp);
-        console.log('data sendMessage server', data);
         if (client === undefined) {
             client = pushUser(data);
-            const result = await setMessage(client, data);
-            if (result !== null) {
-                messages.push(result);
+            if(client != null) {
+                const result = await setMessage(client, data);
+                if (result !== null) {
+                    messages.push(result);
+                }
             }
         } else {
             const result = await setMessage(client, data);
