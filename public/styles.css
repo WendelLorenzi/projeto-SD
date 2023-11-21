@@ -25,6 +25,22 @@ html, body {
     height: 5vw;
     padding: 0 2vw;
   }
+
+  .input-Name {
+    width: 60vw;
+    border: 1px solid #ddd;
+    height: 5vw;
+    padding: 0 2vw;
+    display: flex;
+  }
+
+  .input-Name.escondido {
+    width: 60vw;
+    border: 1px solid #ddd;
+    height: 5vw;
+    padding: 0 2vw;
+    display: none;
+  }
   
   button {
     width: 60vw;
