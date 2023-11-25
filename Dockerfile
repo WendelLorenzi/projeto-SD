@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:18
 
 ARG HOST
 ARG PORT

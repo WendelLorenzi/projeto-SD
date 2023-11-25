@@ -7,11 +7,35 @@ const cors = require('cors');
 
 const server = require('http').createServer(app);
 
+const corsOptions = {
+    origin: '*', 
+    credentials: true,           //access-control-allow-credentials:true
+    optionSuccessStatus: 200,
+}
+
+app.use(cors(corsOptions)); // Use this after the variable declaration
+
 const networkInfo = os.networkInterfaces();
+
+// const getAddress = () => {
+//     if(`${process.env.NODE_ENVIRONMENT}` === 'prod') {
+//         let interface = networkInfo['eth0'];
+//         if(interface) {
+//             console.log('Endereço da eth0:', interface[0].address);
+//             return interface[0].address;
+//         }
+//     } else {
+//         let interface = networkInfo['Wi-Fi'];
+//         if(interface) {
+//             console.log('Endereço dao wifi:', interface[1].address);
+//             return interface[1].address;
+//         }
+//     }
+// }
 
 const getAddress = () => {
     if(`${process.env.NODE_ENVIRONMENT}` === 'prod') {
-        let interface = networkInfo['lo'];
+        let interface = networkInfo['eth0'];
         if(interface) {
             console.log('Endereço da eth0:', interface[0].address);
             return interface[0].address;
@@ -32,25 +56,19 @@ const io = require('socket.io')(server, {
     allowEIO3: true
 });
 
-
-
-app.use(cors());
-
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('views', path.join(__dirname, 'public'));
 
 app.engine('html', require('ejs').renderFile);
 
-app.set('view engine', 'html');
+app.set('view engine', 'ejs');
 
 
 
 app.get('/', (req, res) => {
     res.render('index.ejs', { host: `${endereco}`, port: process.env.PORT });
 });
-
-
 
 let messages = [];
 let userIP = [];
@@ -65,6 +83,7 @@ io.on('connection', socket => {
     const pushUser = (data) => {
         if (data.author != undefined) {
             const objIp = { ip: clientIp, author: data.author };
+            console.log('O ip ' + objIp.ip + ' é o usuário: ' + objIp.author);
             const userNick = messages.find(message => message.author === data.author);
             if(userNick != undefined) {
                 console.log('nome ja exite');

@@ -15,3 +15,11 @@ services:
      - 3000:3000
    volumes:
      - .:/usr/app
+    
+ ngrok:
+   image: wernight/ngrok
+   volumes:
+     - ./ngrok.yml:/home/ngrok/.ngrok2/ngrok.yml
+   ports:
+     - "4040:4040"
+   command: ["ngrok", "http", "3000"]
