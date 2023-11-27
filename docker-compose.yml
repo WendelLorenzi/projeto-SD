@@ -5,21 +5,18 @@ services:
    build:
      context: .
      args:
-       NODE_ENVIRONMENT: prod
        PORT: 3000
-       HOST: 0.0.0.0
-   environment:
-     NODE_ENVIRONMENT: prod
    command: npm start
    ports:
      - 3000:3000
    volumes:
      - .:/usr/app
-    
+
  ngrok:
-   image: wernight/ngrok
-   volumes:
-     - ./ngrok.yml:/home/ngrok/.ngrok2/ngrok.yml
+   image: shkoliar/ngrok:latest      
    ports:
-     - "4040:4040"
-   command: ["ngrok", "http", "3000"]
+      - '4040:4040'
+   links:
+      - chat
+   environment:
+      - PARAMS=http -region=eu -authtoken=2YgVJeV2bBTjlWujVzbn80M8iIu_6G8zE9k7HgPYmStMdthXo chat:3000

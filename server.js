@@ -2,54 +2,28 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const app = express();
-const os = require('os');
 const cors = require('cors');
+const ngrok = require('ngrok');
 
 const server = require('http').createServer(app);
 
 const corsOptions = {
     origin: '*', 
-    credentials: true,           //access-control-allow-credentials:true
+    credentials: true,          
     optionSuccessStatus: 200,
 }
 
-app.use(cors(corsOptions)); // Use this after the variable declaration
+app.use(cors(corsOptions));
 
-const networkInfo = os.networkInterfaces();
-
-// const getAddress = () => {
-//     if(`${process.env.NODE_ENVIRONMENT}` === 'prod') {
-//         let interface = networkInfo['eth0'];
-//         if(interface) {
-//             console.log('Endereço da eth0:', interface[0].address);
-//             return interface[0].address;
-//         }
-//     } else {
-//         let interface = networkInfo['Wi-Fi'];
-//         if(interface) {
-//             console.log('Endereço dao wifi:', interface[1].address);
-//             return interface[1].address;
-//         }
+// const getHost = async () => {
+//     const url = await ngrok.connect({authtoken: `${process.env.NGROK_AUTH}`, proto: 'http', addr: process.env.PORT });
+//     console.log(`ngrok tunnel is running at ${url}`);
+//     if(url) {
+//         return url;
 //     }
-// }
+//     return 'http:localhost';
+//  }
 
-const getAddress = () => {
-    if(`${process.env.NODE_ENVIRONMENT}` === 'prod') {
-        let interface = networkInfo['eth0'];
-        if(interface) {
-            console.log('Endereço da eth0:', interface[0].address);
-            return interface[0].address;
-        }
-    } else {
-        let interface = networkInfo['Wi-Fi'];
-        if(interface) {
-            console.log('Endereço dao wifi:', interface[3].address);
-            return interface[3].address;
-        }
-    }
-}
-
-const endereco = getAddress();
 
 const io = require('socket.io')(server, {
     cors: false,
@@ -64,10 +38,11 @@ app.engine('html', require('ejs').renderFile);
 
 app.set('view engine', 'ejs');
 
-
+// const Host = getHost();
+const Host = 'http://localhost'
 
 app.get('/', (req, res) => {
-    res.render('index.ejs', { host: `${endereco}`, port: process.env.PORT });
+    res.render('index.ejs', { host: Host });
 });
 
 let messages = [];

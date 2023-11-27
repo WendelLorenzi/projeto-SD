@@ -19,8 +19,8 @@
 
     <script type="text/javascript">
         const host = '<%= host %>';
-        const port = '<%= port %>';
-        var socket = io.connect('https://8072-2001-1284-f028-2890-b815-f158-bf54-aa3a.ngrok-free.app/');
+        console.log(host);
+        var socket = io.connect(`${host}`);
         let count = 0;
 
         function renderMessages(message) {
