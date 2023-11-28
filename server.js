@@ -2,39 +2,22 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const app = express();
-const os = require('os');
 const cors = require('cors');
 
 const server = require('http').createServer(app);
 
-const networkInfo = os.networkInterfaces();
-
-const getAddress = () => {
-    if(`${process.env.NODE_ENVIRONMENT}` === 'prod') {
-        let interface = networkInfo['lo'];
-        if(interface) {
-            console.log('Endereço da eth0:', interface[0].address);
-            return interface[0].address;
-        }
-    } else {
-        let interface = networkInfo['Wi-Fi'];
-        if(interface) {
-            console.log('Endereço dao wifi:', interface[3].address);
-            return interface[3].address;
-        }
-    }
+const corsOptions = {
+    origin: '*', 
+    credentials: true,          
+    optionSuccessStatus: 200,
 }
 
-const endereco = getAddress();
+app.use(cors(corsOptions));
 
 const io = require('socket.io')(server, {
     cors: false,
     allowEIO3: true
 });
-
-
-
-app.use(cors());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -42,22 +25,23 @@ app.set('views', path.join(__dirname, 'public'));
 
 app.engine('html', require('ejs').renderFile);
 
-app.set('view engine', 'html');
+app.set('view engine', 'ejs');
 
+// const Host = 'https://native-glad-mouse.ngrok-free.app/';
 
+const Host = 'http://localhost:3000'
+
+console.log('App is Running at: ', Host);
 
 app.get('/', (req, res) => {
-    res.render('index.ejs', { host: `${endereco}`, port: process.env.PORT });
+    res.render('index.ejs', { host: Host });
 });
-
-
 
 let messages = [];
 let userIP = [];
 
 io.on('connection', socket => {
     const clientIp = socket.handshake.headers['x-real-ip'] || socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
-    console.log('Endereço IP do cliente conectado: ' + clientIp);
     const getClient = (clientIp) => {
         return userIP.find(i => i.ip === clientIp && i.author !== undefined);
     };
@@ -65,6 +49,7 @@ io.on('connection', socket => {
     const pushUser = (data) => {
         if (data.author != undefined) {
             const objIp = { ip: clientIp, author: data.author };
+            console.log('O ip ' + objIp.ip + ' é o usuário: ' + objIp.author);
             const userNick = messages.find(message => message.author === data.author);
             if(userNick != undefined) {
                 console.log('nome ja exite');
@@ -72,7 +57,6 @@ io.on('connection', socket => {
             }
             if (objIp.ip && objIp.author) {
                 userIP.push(objIp);
-                // socket.emit('userProfile', objIp);
                 return objIp;
             }
         }
@@ -88,7 +72,6 @@ io.on('connection', socket => {
     const setMessage = (client, data) => {
         return new Promise((resolve) => {
             if (client != undefined && client.author) {
-                // recebendo mensagens
                     const obj = { author: client.author, message: data.message, dateTime: data.dateTime };
                     if (client && obj) {
                         resolve(obj);
@@ -116,10 +99,9 @@ io.on('connection', socket => {
             }
         }
         socket.broadcast.emit('receivedMessage', messages);
-        console.log('messages', messages);
     });
 
     socket.emit('previousMessages', messages);
 });
 
-server.listen(process.env.PORT, process.env.HOST);
+server.listen(process.env.PORT);

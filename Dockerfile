@@ -1,8 +1,6 @@
 FROM node:alpine
 
-ARG HOST
 ARG PORT
-ARG NODE_ENVIRONMENT
 
 WORKDIR /usr/app
 
