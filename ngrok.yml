@@ -1,2 +1,9 @@
+version: 2
+
 authtoken: ${NGROK_AUTH}
 web_addr: 0.0.0.0:4040
+tunnels:
+ chat:
+   addr: 172.19.0.1:3000
+   proto: http
+   hostname: native-glad-mouse.ngrok-free.app

@@ -3,7 +3,6 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const cors = require('cors');
-const ngrok = require('ngrok');
 
 const server = require('http').createServer(app);
 
@@ -14,16 +13,6 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions));
-
-// const getHost = async () => {
-//     const url = await ngrok.connect({authtoken: `${process.env.NGROK_AUTH}`, proto: 'http', addr: process.env.PORT });
-//     console.log(`ngrok tunnel is running at ${url}`);
-//     if(url) {
-//         return url;
-//     }
-//     return 'http:localhost';
-//  }
-
 
 const io = require('socket.io')(server, {
     cors: false,
@@ -38,8 +27,11 @@ app.engine('html', require('ejs').renderFile);
 
 app.set('view engine', 'ejs');
 
-// const Host = getHost();
-const Host = 'http://localhost'
+// const Host = 'https://native-glad-mouse.ngrok-free.app/';
+
+const Host = 'http://localhost:3000'
+
+console.log('App is Running at: ', Host);
 
 app.get('/', (req, res) => {
     res.render('index.ejs', { host: Host });
@@ -50,7 +42,6 @@ let userIP = [];
 
 io.on('connection', socket => {
     const clientIp = socket.handshake.headers['x-real-ip'] || socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
-    console.log('Endereço IP do cliente conectado: ' + clientIp);
     const getClient = (clientIp) => {
         return userIP.find(i => i.ip === clientIp && i.author !== undefined);
     };
@@ -66,7 +57,6 @@ io.on('connection', socket => {
             }
             if (objIp.ip && objIp.author) {
                 userIP.push(objIp);
-                // socket.emit('userProfile', objIp);
                 return objIp;
             }
         }
@@ -82,7 +72,6 @@ io.on('connection', socket => {
     const setMessage = (client, data) => {
         return new Promise((resolve) => {
             if (client != undefined && client.author) {
-                // recebendo mensagens
                     const obj = { author: client.author, message: data.message, dateTime: data.dateTime };
                     if (client && obj) {
                         resolve(obj);
@@ -110,10 +99,9 @@ io.on('connection', socket => {
             }
         }
         socket.broadcast.emit('receivedMessage', messages);
-        console.log('messages', messages);
     });
 
     socket.emit('previousMessages', messages);
 });
 
-server.listen(process.env.PORT, process.env.HOST);
+server.listen(process.env.PORT);

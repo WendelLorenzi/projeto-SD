@@ -34,6 +34,14 @@ html, body {
     display: flex;
   }
 
+  .input-msg {
+    width: 60vw;
+    border: 1px solid #ddd;
+    height: 5vw;
+    padding: 0 2vw;
+    display: flex;
+  }
+
   .input-Name.escondido {
     width: 60vw;
     border: 1px solid #ddd;
@@ -85,12 +93,9 @@ html, body {
     .messages {
       width: 90%;
     }
-  
-    input,
-    input-msg,
     button {
-      height: 2rem;
-      font-size: 1rem;
+      margin-top: 35px;
+      width: 35%;
     }
   
     .messages {

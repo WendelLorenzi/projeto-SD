@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 
 services:
  chat:
@@ -9,14 +9,15 @@ services:
    command: npm start
    ports:
      - 3000:3000
-   volumes:
-     - .:/usr/app
 
  ngrok:
-   image: shkoliar/ngrok:latest      
-   ports:
-      - '4040:4040'
-   links:
-      - chat
-   environment:
-      - PARAMS=http -region=eu -authtoken=2YgVJeV2bBTjlWujVzbn80M8iIu_6G8zE9k7HgPYmStMdthXo chat:3000
+    image: ngrok/ngrok:latest
+    command:
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yml"
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+    ports:
+      - 4040:4040
